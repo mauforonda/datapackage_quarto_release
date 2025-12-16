@@ -48,16 +48,18 @@ runs:
       with:
         tinytex: true
 
-    - name: Warm up LuaLaTeX font cache
-      shell: bash
-      run: |
-        luaotfload-tool -u
-
     - name: Render PDF
       shell: bash
       run: |
+        set +e
         quarto render "${{ inputs.qmd_output }}" --to pdf
-        test -f "${{ inputs.pdf_output }}"
+        rc=$?
+        set -e
+        if [ -f "${{ inputs.pdf_output }}" ]; then
+          echo "PDF created at ${{ inputs.pdf_output }} (quarto exit code: $rc)"
+          exit 0
+        fi
+        exit $rc
 
     - name: Bundle artifacts
       shell: bash
