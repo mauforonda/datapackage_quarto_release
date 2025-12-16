@@ -48,6 +48,11 @@ runs:
       with:
         tinytex: true
 
+    - name: Warm up LuaLaTeX font cache
+      shell: bash
+      run: |
+        luaotfload-tool -u
+
     - name: Render PDF
       shell: bash
       run: |
