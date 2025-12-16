@@ -55,10 +55,16 @@ runs:
         quarto render "${{ inputs.qmd_output }}" --to pdf
         rc=$?
         set -e
-        if [ -f "${{ inputs.pdf_output }}" ]; then
+
+        produced="${{ inputs.qmd_output }}"
+        produced="${produced%.qmd}.pdf"
+
+        if [ -f "$produced" ]; then
+          mv "$produced" "${{ inputs.pdf_output }}"
           echo "PDF created at ${{ inputs.pdf_output }} (quarto exit code: $rc)"
           exit 0
         fi
+
         exit $rc
 
     - name: Bundle artifacts
