@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import json
 import sys
 
@@ -7,14 +8,18 @@ out_qmd = sys.argv[2] if len(sys.argv) > 2 else "datapackage.qmd"
 
 dp = json.load(open(in_json, "r", encoding="utf-8"))
 
+
 def md_escape(s: str) -> str:
     return s.replace("|", r"\|")
+
 
 def field_row(f):
     name = f.get("name", "")
     ftype = f.get("type", "")
     desc = f.get("description", "") or ""
-    return f"| `{md_escape(name)}` | `{md_escape(ftype)}` | {md_escape(desc).replace('\\n', '<br>')} |"
+    desc = md_escape(desc).replace("\n", "<br>")
+    return f"| `{name}` | `{ftype}` | {desc} |"
+
 
 title = dp.get("title", dp.get("name", "Data Package"))
 pkg_name = dp.get("name", "")
