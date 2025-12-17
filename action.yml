@@ -26,10 +26,15 @@ inputs:
     description: Output .pdf path
     required: false
     default: datapackage.pdf
-  data_path:
-    description: Path to data file to include (e.g., datos.csv)
+  data_paths:
+    description: |
+      Newline-separated list of data files to include in the zip.
+      Example:
+        datos.csv
+        another.csv
+        data/subdir/file.parquet
     required: false
-    default: data.csv
+    default: ""
 
 runs:
   using: composite
@@ -73,7 +78,14 @@ runs:
         rm -rf dist
         mkdir -p dist
         cp "${{ inputs.pdf_output }}" dist/
-        cp "${{ inputs.data_path }}" dist/
+
+        while IFS= read -r p; do
+          [ -z "$p" ] && continue
+          cp "$p" dist/
+        done << 'EOF'
+        ${{ inputs.data_paths }}
+        EOF
+
         (cd dist && zip -r ../datapackage-release.zip .)
 
     - name: Create GitHub Release
