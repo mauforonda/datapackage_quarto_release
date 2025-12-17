@@ -36,6 +36,7 @@ lines += [
     "    documentclass: scrartcl",
     "    fontsize: 11pt",
     "    geometry: margin=1in",
+    "    linestretch: 1.2",
     "---",
     "",
     f"**Título:** `{title}`  ",
@@ -60,7 +61,7 @@ for r in dp["resources"]:
         "#### Esquema",
         "",
         "| Campo | Tipo | Descripción |",
-        "|---|---|---|",
+        "|:---|:---:|:---|",
     ]
     for f in r["schema"]["fields"]:
         lines.append(field_row(f))
