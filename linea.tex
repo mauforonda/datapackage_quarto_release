@@ -1,0 +1,101 @@
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+
+\setmainfont[
+  Path=fonts/archivo/,
+  UprightFont=Archivo-Regular.ttf,
+  BoldFont=Archivo-Bold.ttf,
+  ItalicFont=Archivo-Italic.ttf,
+  BoldItalicFont=Archivo-BoldItalic.ttf
+]{Archivo}
+
+\setsansfont[
+  Path=fonts/qanelas/,
+  UprightFont=Qanelas-Regular.otf,
+  BoldFont=Qanelas-Bold.otf,
+  ItalicFont=Qanelas-RegularItalic.otf,
+  BoldItalicFont=Qanelas-BoldItalic.otf
+]{Qanelas}
+
+\setmonofont[
+  Path=fonts/archivo/,
+  UprightFont=Archivo-Regular.ttf,
+  BoldFont=Archivo-Bold.ttf,
+  ItalicFont=Archivo-Italic.ttf,
+  BoldItalicFont=Archivo-BoldItalic.ttf
+]{Archivo}
+
+\usepackage[table]{xcolor}
+\definecolor{BaseText}{HTML}{363534}
+\definecolor{OrnamentLight}{HTML}{F3EAD8}
+\definecolor{OrnamentDark}{HTML}{676767}
+\definecolor{AccentRed}{HTML}{DB281C}
+\definecolor{AccentYellow}{HTML}{F4E410}
+\definecolor{AccentGreen}{HTML}{007C38}
+
+\usepackage{titlesec}
+\titleformat{\section}[block]
+  {\Large\bfseries\color{BaseText}}
+  {}
+  {0pt}
+  {}
+  [{\color{OrnamentDark}\rule{\linewidth}{0.4pt}}]
+\titleformat{\subsection}{\large\bfseries\color{BaseText}}{}{0pt}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{BaseText}}{}{0pt}{}
+\titleformat{\paragraph}{\normalsize\bfseries\color{BaseText}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.2em}{0.4em}
+\titlespacing*{\paragraph}{0pt}{0.8em}{0.4em}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{7pt}
+\setlength{\arrayrulewidth}{0.4pt}
+\arrayrulecolor{OrnamentDark}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=BaseText,
+  urlcolor=OrnamentDark,
+  citecolor=OrnamentDark
+}
+
+\newcommand{\BrandRule}{%
+  \noindent\color{OrnamentDark}\rule{\linewidth}{0.6pt}
+}
+
+\newcommand{\BrandRuleAccent}{%
+  \noindent\color{OrnamentDark}\rule{\linewidth}{0.4pt}\par
+  \vspace{-0.2em}
+  \noindent\color{AccentRed}\rule{0.15\linewidth}{1.2pt}%
+  \color{AccentYellow}\rule{0.15\linewidth}{1.2pt}%
+  \color{AccentGreen}\rule{0.15\linewidth}{1.2pt}%
+  \color{OrnamentLight}\rule{0.55\linewidth}{1.2pt}%
+  \color{OrnamentDark}
+}
+
+\newenvironment{BrandMeta}{%
+  \vspace{0.4em}
+  \noindent\begin{tabular}{@{}p{0.18\linewidth}p{0.78\linewidth}@{}}%
+}{%
+  \end{tabular}
+  \vspace{0.2em}
+}
+
+\newcommand{\MetaItem}[2]{%
+  \textbf{#1} & #2 \\
+}
+
+\newcommand{\ResourceTitle}[1]{%
+  \vspace{0.6em}%
+  {\noindent\sffamily\bfseries\LARGE\color{BaseText}#1\par}%
+  \vspace{0.2em}%
+  {\noindent\color{OrnamentDark}\rule{\linewidth}{0.6pt}\par}%
+  \vspace{0.4em}%
+}
+
+\AtBeginDocument{\color{OrnamentDark}}

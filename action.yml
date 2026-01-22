@@ -53,10 +53,16 @@ runs:
       with:
         tinytex: true
 
+    - name: Install TeX packages
+      shell: bash
+      run: |
+        tlmgr install fontspec titlesec booktabs longtable colortbl xcolor
+
     - name: Render PDF
       shell: bash
       run: |
         set +e
+        mkdir -p .texmf-var .texmf-config
         quarto render "${{ inputs.qmd_output }}" --to pdf
         rc=$?
         set -e
@@ -71,6 +77,10 @@ runs:
         fi
 
         exit $rc
+      env:
+        TEXMFVAR: ${{ github.workspace }}/.texmf-var
+        TEXMFCONFIG: ${{ github.workspace }}/.texmf-config
+        TEXMFHOME: ${{ github.workspace }}/.texmf-home
 
     - name: Bundle artifacts
       shell: bash
