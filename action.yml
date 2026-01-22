@@ -71,7 +71,7 @@ runs:
           echo "tlmgr not found after TinyTeX install" >&2
           exit 1
         fi
-        tlmgr install fontspec titlesec booktabs longtable colortbl xcolor
+        tlmgr install fontspec titlesec booktabs colortbl xcolor
 
     - name: Render PDF
       shell: bash
