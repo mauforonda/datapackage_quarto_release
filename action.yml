@@ -48,6 +48,16 @@ runs:
       run: |
         python "${{ github.action_path }}/datapackage2md.py" "${{ inputs.datapackage_path }}" "${{ inputs.qmd_output }}"
 
+    - name: Sync style assets
+      shell: bash
+      run: |
+        if [ ! -f "linea.tex" ]; then
+          cp "${{ github.action_path }}/linea.tex" "./linea.tex"
+        fi
+        if [ ! -d "fonts" ]; then
+          cp -R "${{ github.action_path }}/fonts" "./fonts"
+        fi
+
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
       with:
