@@ -121,7 +121,10 @@ runs:
         ${{ inputs.data_paths }}
         EOF
 
-        (cd dist && zip -r ../datapackage-release.zip .)
+        repo_name="${GITHUB_REPOSITORY##*/}"
+        zip_name="${repo_name}_${{ inputs.tag }}.zip"
+        echo "RELEASE_ZIP=${zip_name}" >> "$GITHUB_ENV"
+        (cd dist && zip -r "../${zip_name}" .)
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
@@ -130,6 +133,6 @@ runs:
         name: ${{ inputs.release_name != '' && inputs.release_name || inputs.tag }}
         body: ${{ inputs.release_body }}
         files: |
-          datapackage-release.zip
+          ${{ env.RELEASE_ZIP }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
