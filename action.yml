@@ -61,10 +61,15 @@ runs:
           quarto install tinytex --no-prompt
         fi
         if ! command -v tlmgr >/dev/null 2>&1; then
-          TEXBIN="$(find "$HOME/.TinyTeX/bin" -name tlmgr -type f -print -quit | xargs -r dirname)"
-          if [ -n "$TEXBIN" ]; then
-            export PATH="$TEXBIN:$PATH"
-          fi
+          for d in "$HOME/.TinyTeX/bin"/*; do
+            if [ -d "$d" ]; then
+              export PATH="$d:$PATH"
+            fi
+          done
+        fi
+        if ! command -v tlmgr >/dev/null 2>&1; then
+          echo "tlmgr not found after TinyTeX install" >&2
+          exit 1
         fi
         tlmgr install fontspec titlesec booktabs longtable colortbl xcolor
 
