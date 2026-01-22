@@ -56,6 +56,16 @@ runs:
     - name: Install TeX packages
       shell: bash
       run: |
+        set -e
+        if ! command -v tlmgr >/dev/null 2>&1; then
+          quarto install tinytex --no-prompt
+        fi
+        if ! command -v tlmgr >/dev/null 2>&1; then
+          TEXBIN="$(find "$HOME/.TinyTeX/bin" -name tlmgr -type f -print -quit | xargs -r dirname)"
+          if [ -n "$TEXBIN" ]; then
+            export PATH="$TEXBIN:$PATH"
+          fi
+        fi
         tlmgr install fontspec titlesec booktabs longtable colortbl xcolor
 
     - name: Render PDF
