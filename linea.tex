@@ -65,39 +65,58 @@
 }
 
 \pagestyle{empty}
+\pagenumbering{gobble}
 
 \newcommand{\BrandRule}{%
   \noindent\color{OrnamentDark}\rule{\linewidth}{0.6pt}
 }
 
-\newcommand{\BrandRuleAccent}{%
-  \noindent\color{OrnamentDark}\rule{\linewidth}{0.4pt}\par
-  \vspace{-0.2em}
-  \noindent\color{AccentRed}\rule{0.15\linewidth}{1.2pt}%
-  \color{AccentYellow}\rule{0.15\linewidth}{1.2pt}%
-  \color{AccentGreen}\rule{0.15\linewidth}{1.2pt}%
-  \color{OrnamentLight}\rule{0.55\linewidth}{1.2pt}%
+\newcommand{\BrandRuleAccentTop}{%
+  \noindent\color{AccentRed}\rule{0.33\linewidth}{1.2pt}%
+  \color{AccentYellow}\rule{0.33\linewidth}{1.2pt}%
+  \color{AccentGreen}\rule{0.34\linewidth}{1.2pt}%
+  \vspace{0.6em}
+  \color{OrnamentDark}
+}
+
+\newcommand{\BrandRuleAccentBottom}{%
+  \vspace{-0.6em}
+  \noindent\color{AccentRed}\rule{0.33\linewidth}{1.2pt}%
+  \color{AccentYellow}\rule{0.33\linewidth}{1.2pt}%
+  \color{AccentGreen}\rule{0.33\linewidth}{1.2pt}%
+  \vspace{0.6em}%
   \color{OrnamentDark}
 }
 
 \newenvironment{BrandMeta}{%
-  \vspace{0.4em}
+  \vspace{0.6em}
   \noindent\begin{tabular}{@{}p{0.18\linewidth}p{0.78\linewidth}@{}}%
 }{%
   \end{tabular}
-  \vspace{0.2em}
+  \vspace{0.6em}
 }
 
 \newcommand{\MetaItem}[2]{%
   \textbf{#1} & #2 \\
 }
 
-\newcommand{\ResourceTitle}[1]{%
-  \vspace{0.6em}%
-  {\noindent\sffamily\bfseries\LARGE\color{BaseText}#1\par}%
-  \vspace{0.2em}%
-  {\noindent\color{OrnamentDark}\rule{\linewidth}{0.6pt}\par}%
-  \vspace{0.4em}%
+\newenvironment{ResourceBlock}{%
+  \vspace{0.5em}%
+  \noindent\color{OrnamentDark}\rule{\linewidth}{0.4pt}\par
+  \vspace{0.5em}%
+  \begingroup
+  \parindent=0pt
+  \color{OrnamentDark}
+}{%
+  \par
+  \endgroup
+  \vspace{0.5em}%
+  \color{OrnamentDark}
 }
 
-\AtBeginDocument{\color{OrnamentDark}}
+\newcommand{\ResourceTitle}[1]{%
+  {\noindent\sffamily\bfseries\LARGE\color{BaseText}#1\par}%
+  \vspace{0.3em}%
+}
+
+\AtBeginDocument{\thispagestyle{empty}\color{OrnamentDark}}

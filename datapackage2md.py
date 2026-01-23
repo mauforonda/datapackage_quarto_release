@@ -68,13 +68,13 @@ lines += [
     "      - linea.tex",
     "---",
     "",
-    r"\BrandRuleAccent",
+    r"\BrandRuleAccentTop",
     r"\begin{BrandMeta}",
     rf"\MetaItem{{Título}}{{{tex_escape(title)}}}",
     rf"\MetaItem{{Paquete}}{{{tex_escape(pkg_name)}}}",
     rf"\MetaItem{{Versión}}{{{tex_escape(version)}}}",
     r"\end{BrandMeta}",
-    r"\BrandRuleAccent",
+    r"\BrandRuleAccentBottom",
     "",
     "## Recursos",
     "",
@@ -82,19 +82,26 @@ lines += [
 
 for r in dp["resources"]:
     resource_title = tex_escape(r.get("title", r.get("name", "")))
+    res_name = tex_escape(r.get("name", ""))
+    res_type = tex_escape(r.get("type", ""))
+    res_path = tex_escape(r.get("path", ""))
+    res_format = tex_escape(r.get("format", ""))
+    res_mediatype = tex_escape(r.get("mediatype", ""))
+    res_encoding = tex_escape(r.get("encoding", ""))
     lines += [
+        r"\begin{ResourceBlock}",
         rf"\ResourceTitle{{{resource_title}}}",
         "",
-        f"**Nombre:** `{r.get('name', '')}`  ",
-        f"**Tipo:** `{r.get('type', '')}`  ",
-        f"**Documento:** `{r.get('path', '')}`  ",
-        f"**Formato:** `{r.get('format', '')}`  ",
-        f"**Extensión:** `{r.get('mediatype', '')}`  ",
-        f"**Codificación:** `{r.get('encoding', '')}`",
+        rf"\textbf{{Nombre:}} \texttt{{{res_name}}}\\",
+        rf"\textbf{{Tipo:}} \texttt{{{res_type}}}\\",
+        rf"\textbf{{Documento:}} \texttt{{{res_path}}}\\",
+        rf"\textbf{{Formato:}} \texttt{{{res_format}}}\\",
+        rf"\textbf{{Extensión:}} \texttt{{{res_mediatype}}}\\",
+        rf"\textbf{{Codificación:}} \texttt{{{res_encoding}}}",
         "",
         r"\paragraph{Esquema}",
         "",
-        r"\begin{longtable}{@{}p{0.26\linewidth}p{0.16\linewidth}p{0.52\linewidth}@{}}",
+        r"\begin{longtable*}{@{}p{0.26\linewidth}p{0.16\linewidth}p{0.52\linewidth}@{}}",
         r"\rowcolor{OrnamentLight}\sffamily\bfseries\small \textcolor{BaseText}{Campo} & \textcolor{BaseText}{Tipo} & \textcolor{BaseText}{Descripción} \\",
         r"\addlinespace[0.2em]",
         r"\midrule",
@@ -107,7 +114,8 @@ for r in dp["resources"]:
     ]
     for f in r["schema"]["fields"]:
         lines.append(field_row(f))
-    lines.append(r"\end{longtable}")
+    lines.append(r"\end{longtable*}")
+    lines.append(r"\end{ResourceBlock}")
 
 open(out_qmd, "w", encoding="utf-8").write("\n".join(lines))
 print(f"Escribí: {out_qmd}")
