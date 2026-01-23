@@ -35,6 +35,14 @@ inputs:
         data/subdir/file.parquet
     required: false
     default: ""
+  identity:
+    description: Optional brand identity (e.g., mefp)
+    required: false
+    default: ""
+  project:
+    description: Optional project name to display under the header
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -46,7 +54,7 @@ runs:
     - name: Generate QMD
       shell: bash
       run: |
-        python "${{ github.action_path }}/datapackage2md.py" "${{ inputs.datapackage_path }}" "${{ inputs.qmd_output }}"
+        python "${{ github.action_path }}/datapackage2md.py" "${{ inputs.datapackage_path }}" "${{ inputs.qmd_output }}" --identity "${{ inputs.identity }}" --project "${{ inputs.project }}"
 
     - name: Sync style assets
       shell: bash
@@ -56,6 +64,9 @@ runs:
         fi
         if [ ! -d "fonts" ]; then
           cp -R "${{ github.action_path }}/fonts" "./fonts"
+        fi
+        if [ ! -d "assets" ]; then
+          cp -R "${{ github.action_path }}/assets" "./assets"
         fi
 
     - name: Setup Quarto

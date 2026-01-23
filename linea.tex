@@ -67,10 +67,6 @@
 \pagestyle{empty}
 \pagenumbering{gobble}
 
-\newcommand{\BrandRule}{%
-  \noindent\color{OrnamentDark}\rule{\linewidth}{0.6pt}
-}
-
 \newcommand{\BrandRuleAccentTop}{%
   \noindent\color{AccentRed}\rule{0.33\linewidth}{1.2pt}%
   \color{AccentYellow}\rule{0.33\linewidth}{1.2pt}%
@@ -101,22 +97,49 @@
 }
 
 \newenvironment{ResourceBlock}{%
-  \vspace{0.5em}%
-  \noindent\color{OrnamentDark}\rule{\linewidth}{0.4pt}\par
-  \vspace{0.5em}%
+  \vspace{1.2em}%
+  \noindent\color{OrnamentDark}\rule{\linewidth}{1.2pt}\par
+  \vspace{0.6em}%
   \begingroup
   \parindent=0pt
   \color{OrnamentDark}
 }{%
   \par
   \endgroup
-  \vspace{0.5em}%
+  \vspace{0.6em}%
   \color{OrnamentDark}
 }
 
 \newcommand{\ResourceTitle}[1]{%
-  {\noindent\sffamily\bfseries\LARGE\color{BaseText}#1\par}%
-  \vspace{0.3em}%
+  {%
+    \noindent\sffamily\bfseries\Large\color{BaseText}%
+    \hyphenpenalty=10000\exhyphenpenalty=10000\emergencystretch=2em%
+    #1\par
+  }%
+  \vspace{1.2em}%
 }
+
+\newcommand{\BrandHeader}[1]{%
+  {%
+    \noindent\makebox[\linewidth][c]{\includegraphics[height=80px,keepaspectratio]{#1}}\par
+    \vspace{0.6em}%
+  }%
+}
+
+\newcommand{\ProjectTitle}[1]{%
+  {%
+    \noindent\centering\sffamily\bfseries\Large\color{BaseText}#1\par
+    \vspace{1.2em}%
+  }%
+}
+
+\newcommand{\PackageTitle}[1]{%
+  {%
+    \noindent\centering\sffamily\bfseries\LARGE\color{BaseText}#1\par
+    \vspace{0.6em}%
+  }%
+}
+
+\renewcommand{\maketitle}{}
 
 \AtBeginDocument{\thispagestyle{empty}\color{OrnamentDark}}
