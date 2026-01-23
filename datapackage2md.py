@@ -52,7 +52,7 @@ def field_row(f):
                 + r"\end{itemize}\normalsize"
             )
             desc = f"{desc} {cat_block}" if desc else cat_block
-    name = tex_escape(name)
+    name = tex_escape(name).replace(r"\_", r"\_\allowbreak{}")
     ftype = tex_escape(ftype)
     return (
         r"\textcolor{OrnamentDark}{\textbf{"
@@ -189,7 +189,7 @@ for r in dp["resources"]:
         rf"\textbf{{Codificación:}} \texttt{{{res_encoding}}}",
         "",
         r"\vspace{1.2em}",
-        r"\begin{longtable*}{@{}p{0.26\linewidth}p{0.16\linewidth}p{0.52\linewidth}@{}}",
+        r"\begin{longtable*}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\centering\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.52\linewidth}@{}}",
         r"\rowcolor{OrnamentLight} \textbf{Campo} & \textbf{Tipo} & \textbf{Descripción} \\",
         r"\addlinespace[0.6em]",
         r"\endfirsthead",
