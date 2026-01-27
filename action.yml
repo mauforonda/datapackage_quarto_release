@@ -94,7 +94,11 @@ runs:
           echo "No zip files found in build/dist." >&2
           exit 1
         fi
-        printf "RELEASE_ZIPS<<EOF\n%s\nEOF\n" "${files[@]}" >> "$GITHUB_ENV"
+        {
+          echo "RELEASE_ZIPS<<EOF"
+          printf "%s\n" "${files[@]}"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
