@@ -6,6 +6,8 @@ identity="${2:-}"
 project="${3:-}"
 build_root="${4:-build}"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 qmd_dir="${build_root}/qmd"
 pdf_dir="${build_root}/pdf"
 dist_dir="${build_root}/dist"
@@ -13,15 +15,15 @@ dist_dir="${build_root}/dist"
 rm -rf "$build_root"
 mkdir -p "$qmd_dir" "$pdf_dir" "$dist_dir"
 
-cp "linea.tex" "$qmd_dir/"
-if [ -d "fonts" ]; then
-  cp -R "fonts" "$qmd_dir/"
+cp "${script_dir}/linea.tex" "$qmd_dir/"
+if [ -d "${script_dir}/fonts" ]; then
+  cp -R "${script_dir}/fonts" "$qmd_dir/"
 fi
-if [ -d "assets" ]; then
-  cp -R "assets" "$qmd_dir/"
+if [ -d "${script_dir}/assets" ]; then
+  cp -R "${script_dir}/assets" "$qmd_dir/"
 fi
 
-python datapackage2md.py "$datapackage_path" "$qmd_dir" --identity "$identity" --project "$project"
+python "${script_dir}/datapackage2md.py" "$datapackage_path" "$qmd_dir" --identity "$identity" --project "$project"
 
 python - "$datapackage_path" <<'PY' | while IFS=$'\t' read -r name path; do
 import json
