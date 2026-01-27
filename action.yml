@@ -18,23 +18,6 @@ inputs:
     description: Path to datapackage.json
     required: false
     default: datapackage.json
-  qmd_output:
-    description: Output .qmd path
-    required: false
-    default: datapackage.qmd
-  pdf_output:
-    description: Output .pdf path
-    required: false
-    default: datapackage.pdf
-  data_paths:
-    description: |
-      Newline-separated list of data files to include in the zip.
-      Example:
-        datos.csv
-        another.csv
-        data/subdir/file.parquet
-    required: false
-    default: ""
   identity:
     description: Optional brand identity (e.g., mefp)
     required: false
@@ -50,11 +33,6 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: "3.11"
-
-    - name: Generate QMD
-      shell: bash
-      run: |
-        python "${{ github.action_path }}/datapackage2md.py" "${{ inputs.datapackage_path }}" "${{ inputs.qmd_output }}" --identity "${{ inputs.identity }}" --project "${{ inputs.project }}"
 
     - name: Sync style assets
       shell: bash
@@ -94,48 +72,29 @@ runs:
         fi
         tlmgr install fontspec titlesec booktabs colortbl xcolor
 
-    - name: Render PDF
+    - name: Build PDFs and zips
       shell: bash
       run: |
-        set +e
         mkdir -p .texmf-var .texmf-config
-        quarto render "${{ inputs.qmd_output }}" --to pdf
-        rc=$?
-        set -e
-
-        produced="${{ inputs.qmd_output }}"
-        produced="${produced%.qmd}.pdf"
-
-        if [ -f "$produced" ]; then
-          mv "$produced" "${{ inputs.pdf_output }}"
-          echo "PDF created at ${{ inputs.pdf_output }} (quarto exit code: $rc)"
-          exit 0
-        fi
-
-        exit $rc
+        bash "${{ github.action_path }}/build_artifacts.sh" \
+          "${{ inputs.datapackage_path }}" \
+          "${{ inputs.identity }}" \
+          "${{ inputs.project }}"
       env:
         TEXMFVAR: ${{ github.workspace }}/.texmf-var
         TEXMFCONFIG: ${{ github.workspace }}/.texmf-config
         TEXMFHOME: ${{ github.workspace }}/.texmf-home
 
-    - name: Bundle artifacts
+    - name: Collect release files
       shell: bash
       run: |
-        rm -rf dist
-        mkdir -p dist
-        cp "${{ inputs.pdf_output }}" dist/
-
-        while IFS= read -r p; do
-          [ -z "$p" ] && continue
-          cp "$p" dist/
-        done << 'EOF'
-        ${{ inputs.data_paths }}
-        EOF
-
-        repo_name="${GITHUB_REPOSITORY##*/}"
-        zip_name="${repo_name}_${{ inputs.tag }}.zip"
-        echo "RELEASE_ZIP=${zip_name}" >> "$GITHUB_ENV"
-        (cd dist && zip -r "../${zip_name}" .)
+        shopt -s nullglob
+        files=(build/dist/*.zip)
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "No zip files found in build/dist." >&2
+          exit 1
+        fi
+        printf "RELEASE_ZIPS<<EOF\n%s\nEOF\n" "${files[@]}" >> "$GITHUB_ENV"
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
@@ -144,6 +103,6 @@ runs:
         name: ${{ inputs.release_name != '' && inputs.release_name || inputs.tag }}
         body: ${{ inputs.release_body }}
         files: |
-          ${{ env.RELEASE_ZIP }}
+          ${{ env.RELEASE_ZIPS }}
       env:
         GITHUB_TOKEN: ${{ github.token }}

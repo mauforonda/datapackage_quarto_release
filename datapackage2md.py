@@ -2,17 +2,18 @@
 
 import argparse
 import json
+import os
 import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("in_json", nargs="?", default="datapackage.json")
-parser.add_argument("out_qmd", nargs="?", default="datapackage.qmd")
+parser.add_argument("out_dir", nargs="?", default=".")
 parser.add_argument("--identity", default="")
 parser.add_argument("--project", default="")
 args = parser.parse_args()
 
 in_json = args.in_json
-out_qmd = args.out_qmd
+out_dir = args.out_dir
 
 dp = json.load(open(in_json, "r", encoding="utf-8"))
 
@@ -116,58 +117,71 @@ def format_sources(sources) -> str:
     return "; ".join([p for p in parts if p])
 
 
-title = dp.get("title", dp.get("name", "Data Package"))
 pkg_name = dp.get("name", "")
 version = dp.get("version", "")
 identity = (args.identity or "").strip()
 project = (args.project or "").strip()
 sources = dp.get("sources")
+resources = dp.get("resources", [])
 
-lines = []
-lines += [
-    "---",
-    f'title: "{title}"',
-    "format:",
-    "  pdf:",
-    "    toc: false",
-    "    number-sections: false",
-    "    documentclass: scrartcl",
-    "    pdf-engine: lualatex",
-    "    fontsize: 11pt",
-    "    geometry: margin=1in",
-    "    linestretch: 1.2",
-    "    colorlinks: true",
-    "    include-in-header:",
-    "      - linea.tex",
-    "---",
-    "",
-]
-if identity:
-    header_path = f"assets/{identity}/header.png"
-    lines.append(rf"\BrandHeader{{{header_path}}}")
-if project:
-    lines.append(rf"\ProjectTitle{{{tex_escape(project)}}}")
-lines.append(rf"\PackageTitle{{{tex_escape(title)}}}")
-lines += [
-    "",
-    r"\BrandRuleAccentTop",
-    r"\begin{BrandMeta}",
-    rf"\MetaItem{{Título}}{{{tex_escape(title)}}}",
-    rf"\MetaItem{{Paquete}}{{{tex_escape(pkg_name)}}}",
-    rf"\MetaItem{{Versión}}{{{tex_escape(version)}}}",
-]
-if sources:
-    sources_text = format_sources(sources)
-    if sources_text:
-        lines.append(rf"\MetaItem{{Fuentes}}{{{sources_text}}}")
-lines += [
-    r"\end{BrandMeta}",
-    r"\BrandRuleAccentBottom",
-    "",
-]
+if not resources:
+    sys.exit("No resources found in datapackage.json")
 
-for r in dp["resources"]:
-    resource_title = tex_escape(r.get("title", r.get("name", "")))
+os.makedirs(out_dir, exist_ok=True)
+
+for r in resources:
+    resource_name = r.get("name", "resource")
+    resource_title_raw = r.get("title", resource_name)
+    title = resource_title_raw
+
+    lines = []
+    lines += [
+        "---",
+        f'title: "{title}"',
+        "format:",
+        "  pdf:",
+        "    toc: false",
+        "    number-sections: false",
+        "    documentclass: scrartcl",
+        "    pdf-engine: lualatex",
+        "    fontsize: 11pt",
+    "    geometry:",
+    "      - top=0.75in",
+    "      - bottom=0.75in",
+    "      - left=1in",
+    "      - right=1in",
+        "    linestretch: 1.2",
+        "    colorlinks: true",
+        "    include-in-header:",
+        "      - linea.tex",
+        "---",
+        "",
+    ]
+    if identity:
+        header_path = f"assets/{identity}/header.png"
+        lines.append(rf"\BrandHeader{{{header_path}}}")
+    if project:
+        lines.append(rf"\ProjectTitle{{{tex_escape(project)}}}")
+    lines.append(rf"\PackageTitle{{{tex_escape(title)}}}")
+    lines += [
+        "",
+        r"\BrandRuleAccentTop",
+        r"\begin{BrandMeta}",
+        rf"\MetaItem{{Título}}{{{tex_escape(title)}}}",
+        rf"\MetaItem{{Paquete}}{{{tex_escape(pkg_name)}}}",
+        rf"\MetaItem{{Versión}}{{{tex_escape(version)}}}",
+    ]
+    if sources:
+        sources_text = format_sources(sources)
+        if sources_text:
+            lines.append(rf"\MetaItem{{Fuentes}}{{{sources_text}}}")
+    lines += [
+        r"\end{BrandMeta}",
+        r"\BrandRuleAccentBottom",
+        "",
+    ]
+
+    resource_title = tex_escape(resource_title_raw)
     res_name = tex_escape(r.get("name", ""))
     res_type = tex_escape(r.get("type", ""))
     res_path = tex_escape(r.get("path", ""))
@@ -177,10 +191,10 @@ for r in dp["resources"]:
     res_desc = tex_escape(r.get("description", ""))
     lines += [
         r"\begin{ResourceBlock}",
-        rf"\ResourceTitle{{{resource_title}}}",
         "",
         rf"\hyphenpenalty=10000\exhyphenpenalty=10000\textit{{{res_desc}}}" if res_desc else "",
         "",
+        r"\vspace{1.2em}",
         rf"\textbf{{Nombre:}} \texttt{{{res_name}}}\\",
         rf"\textbf{{Tipo:}} \texttt{{{res_type}}}\\",
         rf"\textbf{{Documento:}} \texttt{{{res_path}}}\\",
@@ -200,5 +214,6 @@ for r in dp["resources"]:
     lines.append(r"\end{longtable*}")
     lines.append(r"\end{ResourceBlock}")
 
-open(out_qmd, "w", encoding="utf-8").write("\n".join(lines))
-print(f"Escribí: {out_qmd}")
+    out_qmd = os.path.join(out_dir, f"{resource_name}.qmd")
+    open(out_qmd, "w", encoding="utf-8").write("\n".join(lines))
+    print(f"Escribí: {out_qmd}")
